@@ -3,8 +3,10 @@
   "version": "1.14.1.0",
   "schemaVersion": 2,
   "kind": "StaticLib",
-  "description": "TODO: one-line description of cpr",
-  "dependencies": {},
+  "description": "C++ Requests - friendly wrapper around libcurl",
+  "dependencies": {
+    "curl": "^8.19.0.0"
+  },
   "build": {
     "system": "cmake",
     "configs": [
@@ -15,7 +17,12 @@
     ],
     "configure": [
       "-DCPR_BUILD_TESTS=OFF",
-      "-DCPR_USE_SYSTEM_CURL=ON"
+      "-DCPR_USE_SYSTEM_CURL=ON",
+      "-DCPR_ENABLE_SSL=ON",
+      "-DCPR_FORCE_WINSSL_BACKEND=ON",
+      "-DCMAKE_DEBUG_POSTFIX=d",
+      "-DCMAKE_RELWITHDEBINFO_POSTFIX=rd",
+      "-DCMAKE_MINSIZEREL_POSTFIX=msr"
     ],
     "installDir": "install"
   }
