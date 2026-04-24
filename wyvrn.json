@@ -1,0 +1,22 @@
+{
+  "name": "cpr",
+  "version": "1.14.1.0",
+  "schemaVersion": 2,
+  "kind": "StaticLib",
+  "description": "TODO: one-line description of cpr",
+  "dependencies": {},
+  "build": {
+    "system": "cmake",
+    "configs": [
+      "Debug",
+      "Release",
+      "RelWithDebInfo",
+      "MinSizeRel"
+    ],
+    "configure": [
+      "-DCPR_BUILD_TESTS=OFF",
+      "-DCPR_USE_SYSTEM_CURL=ON"
+    ],
+    "installDir": "install"
+  }
+}
