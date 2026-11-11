@@ -39,6 +39,7 @@ target_sources(cpr PRIVATE
     cpr/ssl_ctx.h
     cpr/ssl_options.h
     cpr/threadpool.h
+    cpr/threadpool_backend.h
     cpr/timeout.h
     cpr/unix_socket.h
     cpr/util.h
@@ -51,6 +52,7 @@ target_sources(cpr PRIVATE
     cpr/curlmultiholder.h
     cpr/multiperform.h
     cpr/resolve.h
+    ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprexport.h
     ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprver.h
 )
 
@@ -100,5 +102,8 @@ else()
   endif()
 endif()
 
-install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-install(DIRECTORY ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+
+if (CPR_ENABLE_INSTALL)
+  install(DIRECTORY cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+  install(DIRECTORY ${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endif()

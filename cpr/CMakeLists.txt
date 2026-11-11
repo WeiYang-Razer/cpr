@@ -33,6 +33,22 @@ add_library(cpr
 
 add_library(cpr::cpr ALIAS cpr)
 
+# Consumers of DLL data need explicit import declarations even with automatic exports.
+# More: https://cmake.org/cmake/help/latest/module/GenerateExportHeader.html
+include(GenerateExportHeader)
+generate_export_header(cpr EXPORT_FILE_NAME "${PROJECT_BINARY_DIR}/cpr_generated_includes/cpr/cprexport.h")
+
+find_package(Threads REQUIRED)
+target_link_libraries(cpr PRIVATE Threads::Threads)
+if(CPR_THREAD_POOL STREQUAL "BOOST_ASIO")
+        # Asio and Boost.System are header-only at this version; do not fetch Boost.
+        find_package(Boost 1.70 REQUIRED)
+        target_sources(cpr PRIVATE threadpool_boost.cpp threadpool_boost_context.cpp)
+        target_link_libraries(cpr PRIVATE Boost::headers)
+else()
+        target_sources(cpr PRIVATE threadpool_builtin.cpp)
+endif()
+
 target_link_libraries(cpr PUBLIC ${CURL_LIB}) # todo should be private, but first dependencies in ssl_options need to be removed
 
 # Fix missing OpenSSL includes for Windows since in 'ssl_ctx.cpp' we include OpenSSL directly
@@ -50,11 +66,13 @@ set_target_properties(cpr
 # Import GNU common install directory variables
 include(GNUInstallDirs)
 
-install(TARGETS cpr
-        EXPORT cprTargets
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+if (CPR_ENABLE_INSTALL)
+        install(TARGETS cpr
+                EXPORT cprTargets
+                RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+                ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+                LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
+endif()
 
 if(CPR_USE_SYSTEM_CURL)
         # Include CMake helpers for package config files
@@ -76,11 +94,15 @@ if(CPR_USE_SYSTEM_CURL)
                 INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
         endif()
 
-        install(FILES ${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake
-                ${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+        if (CPR_ENABLE_INSTALL)
+                install(FILES ${PROJECT_BINARY_DIR}/cpr/cprConfig.cmake
+                        ${PROJECT_BINARY_DIR}/cpr/cprConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+        endif()
 endif()
 
-install(EXPORT cprTargets
-        FILE cprTargets.cmake
-        NAMESPACE cpr::
-        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+if (CPR_ENABLE_INSTALL)
+        install(EXPORT cprTargets
+                FILE cprTargets.cmake
+                NAMESPACE cpr::
+                DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/cpr)
+endif()
