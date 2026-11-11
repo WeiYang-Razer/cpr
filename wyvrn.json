@@ -1,11 +1,11 @@
 {
   "name": "cpr",
-  "version": "1.14.1.0",
+  "version": "1.15.1.0",
   "schemaVersion": 2,
   "kind": "StaticLib",
   "description": "C++ Requests - friendly wrapper around libcurl",
   "dependencies": {
-    "curl": "^8.19.0.0"
+    "curl": "^8.23.0.0"
   },
   "build": {
     "system": "cmake",
